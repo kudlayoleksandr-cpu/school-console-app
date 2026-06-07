@@ -26,7 +26,7 @@ public class ConnectionManager {
         this.password = props.getProperty("db.password");
     }
 
-    public Connection getConnection() throws SQLException {
+    public  Connection getConnection() throws SQLException {
         return DriverManager.getConnection(url, user, password);
     }
 }

@@ -1,16 +1,18 @@
 package ua.foxminded.school;
 
 import ua.foxminded.school.db.ConnectionManager;
-import java.sql.Connection;
+import ua.foxminded.school.db.Db.Initializer;
+import ua.foxminded.school.db.Db.TestData;
+
 
 public class Main {
     public static void main(String[] args) {
-        ConnectionManager cm = new ConnectionManager();
-        try (Connection conn = cm.getConnection()) {
-            System.out.println("Connected to DB: " + conn.getMetaData().getURL());
-        } catch (Exception e) {
-            System.out.println("Connection FAILED: " + e.getMessage());
-        }
+        new Initializer().run();
+        new TestData().generate();
+        System.out.println("Data generated successfully");
+
     }
+
+
 }
 
