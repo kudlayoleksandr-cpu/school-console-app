@@ -20,7 +20,7 @@ public class Initializer {
         } catch (IOException e) {
             throw new RuntimeException("Failed to execute SQL",e);
         }
-        try (Connection conn = new ConnectionManager().getConnection();
+        try (Connection conn =  ConnectionManager.getInstance().getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
