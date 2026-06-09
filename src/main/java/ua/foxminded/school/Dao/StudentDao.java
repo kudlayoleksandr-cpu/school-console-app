@@ -77,4 +77,37 @@ public class StudentDao {
         }
 
     }
+    public void deleteStudent(int studentId){
+        String sql="DELETE FROM students WHERE student_id=?";
+        try (Connection conn=ConnectionManager.getInstance().getConnection();
+            PreparedStatement ps=conn.prepareStatement(sql)) {
+            ps.setInt(1, studentId);
+            ps.executeUpdate();
+        } catch(SQLException e){
+            throw new RuntimeException("Failed to delete student",e);
+        }
+    }
+    public void addStudentToCourse(int studentId, int courseId) {
+        String sql = "INSERT INTO students_courses(student_id, course_id) VALUES(?, ?)";
+        try (Connection conn = ConnectionManager.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, studentId);
+            ps.setInt(2, courseId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to add student to course", e);
+        }
+    }
+    public void removeStudentFromCourse(int studentId, int courseId) {
+        String sql = "DELETE FROM students_courses WHERE student_id = ? AND course_id = ?";
+        try (Connection conn = ConnectionManager.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, studentId);
+            ps.setInt(2, courseId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to remove student from course", e);
+        }
+    }
+
 }
