@@ -1,0 +1,6 @@
+# Maven build output
+target/
+
+# OS
+Thumbs.db
+.DS_Store
