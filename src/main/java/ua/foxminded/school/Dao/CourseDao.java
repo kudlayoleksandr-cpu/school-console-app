@@ -3,6 +3,7 @@ package ua.foxminded.school.Dao;
 import ua.foxminded.school.db.ConnectionManager;
 import ua.foxminded.school.model.Course;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CourseDao {
@@ -12,6 +13,9 @@ public interface CourseDao {
     Optional<Course> findById(int id);
 
     Optional<Course> findByName(String name);
+    List<Course> findAll();
+    void update(Course course);
+    void deleteById(int id);
 }
 
 

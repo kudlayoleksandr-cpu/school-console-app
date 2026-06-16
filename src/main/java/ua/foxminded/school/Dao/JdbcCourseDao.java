@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ua.foxminded.school.model.Course;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -46,6 +47,23 @@ public class JdbcCourseDao implements CourseDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+    private static final String FIND_ALL = "SELECT * FROM courses";
+    private static final String UPDATE =
+            "UPDATE courses SET course_name = ?, course_description = ? WHERE course_id = ?";
+    private static final String DELETE = "DELETE FROM courses WHERE course_id = ?";
+    @Override
+    public List<Course> findAll() {
+        return jdbcTemplate.query(FIND_ALL, courseRowMapper);
+    }
+    @Override
+    public void deleteById(int id) {
+        jdbcTemplate.update(DELETE, id);
+    }
+    @Override
+    public void update(Course course) {
+        jdbcTemplate.update(UPDATE,
+                course.getCourseName(), course.getCourseDescription(), course.getCourseId());
     }
 }
 
