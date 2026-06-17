@@ -1,6 +1,5 @@
 package ua.foxminded.school.Dao;
 
-import ua.foxminded.school.db.ConnectionManager;
 import ua.foxminded.school.model.Course;
 
 import java.util.List;
