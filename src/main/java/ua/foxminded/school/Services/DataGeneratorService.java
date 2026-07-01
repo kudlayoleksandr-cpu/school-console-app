@@ -1,4 +1,4 @@
-package ua.foxminded.school;
+package ua.foxminded.school.Services;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -17,7 +17,7 @@ import java.util.Random;
 
 @Component
 @Order(1)
-public class Data implements CommandLineRunner {
+public class DataGeneratorService implements CommandLineRunner {
 
     private static final String[] FIRST_NAMES = {
             "Andrii", "Anton", "Oleksandr", "Oleksa", "Oleksii",
@@ -47,7 +47,7 @@ public class Data implements CommandLineRunner {
     private final StudentDao studentDao;
     private final Random random = new Random();
 
-    public Data(GroupDao groupDao, CourseDao courseDao, StudentDao studentDao) {
+    public DataGeneratorService(GroupDao groupDao, CourseDao courseDao, StudentDao studentDao) {
         this.groupDao = groupDao;
         this.courseDao = courseDao;
         this.studentDao = studentDao;
