@@ -1,5 +1,7 @@
 package ua.foxminded.school.Dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +13,9 @@ import java.util.Optional;
 
 @Repository
 public class JdbcStudentDao implements StudentDao {
+
+    private static final Logger log = LoggerFactory.getLogger(JdbcStudentDao.class);
+
     private static final String INSERT =
             "INSERT INTO students(group_id, first_name, last_name) VALUES (?, ?, ?)";
     private static final String FIND_BY_ID = "SELECT * FROM students WHERE student_id = ?";

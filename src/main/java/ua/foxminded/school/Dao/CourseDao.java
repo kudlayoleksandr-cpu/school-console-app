@@ -13,6 +13,7 @@ public interface CourseDao {
 
     Optional<Course> findByName(String name);
     List<Course> findAll();
+    List<Course> findByStudentId(int studentId);
     void update(Course course);
     void deleteById(int id);
 }
