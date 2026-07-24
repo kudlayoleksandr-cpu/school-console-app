@@ -44,26 +44,33 @@ public class JdbcStudentDao implements StudentDao {
 
     @Override
     public void save(Student student) {
+        log.debug("Saving student {} {} in group {}",
+                student.getfirstName(), student.getsecondName(), student.getGroupId());
         jdbcTemplate.update(INSERT,
                 student.getGroupId(), student.getfirstName(), student.getsecondName());
     }
 
     @Override
     public Optional<Student> findById(int id) {
+        log.debug("Looking up student by id {}", id);
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID, studentRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
+            log.warn("No student found with id {}", id);
             return Optional.empty();
         }
     }
 
     @Override
     public List<Student> findAll() {
-        return jdbcTemplate.query(FIND_ALL, studentRowMapper);
+        List<Student> students = jdbcTemplate.query(FIND_ALL, studentRowMapper);
+        log.debug("Found {} students", students.size());
+        return students;
     }
 
     @Override
     public void update(Student student) {
+        log.debug("Updating student with id {}", student.getStudentId());
         jdbcTemplate.update(UPDATE,
                 student.getGroupId(), student.getfirstName(), student.getsecondName(),
                 student.getStudentId());
@@ -71,26 +78,32 @@ public class JdbcStudentDao implements StudentDao {
 
     @Override
     public void deleteById(int id) {
+        log.debug("Deleting student with id {}", id);
         jdbcTemplate.update(DELETE, id);
     }
 
     @Override
     public List<Student> findByCourseName(String courseName) {
-        return jdbcTemplate.query(FIND_BY_COURSE_NAME, studentRowMapper, courseName);
+        List<Student> students = jdbcTemplate.query(FIND_BY_COURSE_NAME, studentRowMapper, courseName);
+        log.debug("Found {} students on course '{}'", students.size(), courseName);
+        return students;
     }
 
     @Override
     public void assignToGroup(int studentId, int groupId) {
+        log.debug("Assigning student {} to group {}", studentId, groupId);
         jdbcTemplate.update(ASSIGN_TO_GROUP, groupId, studentId);
     }
 
     @Override
     public void addToCourse(int studentId, int courseId) {
+        log.debug("Adding student {} to course {}", studentId, courseId);
         jdbcTemplate.update(ADD_TO_COURSE, studentId, courseId);
     }
 
     @Override
     public void removeFromCourse(int studentId, int courseId) {
+        log.debug("Removing student {} from course {}", studentId, courseId);
         jdbcTemplate.update(REMOVE_FROM_COURSE, studentId, courseId);
     }
 }

@@ -50,7 +50,7 @@ public class JdbcCourseDao implements CourseDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID, courseRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
-            log.debug("No course found with id {}", id);
+            log.warn("No course found with id {}", id);
             return Optional.empty();
         }
     }
@@ -61,7 +61,7 @@ public class JdbcCourseDao implements CourseDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_NAME, courseRowMapper, name));
         } catch (EmptyResultDataAccessException e) {
-            log.debug("No course found with name '{}'", name);
+            log.warn("No course found with name '{}'", name);
             return Optional.empty();
         }
     }

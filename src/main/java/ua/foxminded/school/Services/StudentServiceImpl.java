@@ -2,6 +2,7 @@ package ua.foxminded.school.Services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import ua.foxminded.school.Dao.CourseDao;
 import ua.foxminded.school.Dao.StudentDao;
 import ua.foxminded.school.model.Student;
 import java.util.List;
@@ -13,9 +14,11 @@ public class StudentServiceImpl implements StudentService {
     private static final Logger log = LoggerFactory.getLogger(StudentServiceImpl.class);
 
     private final StudentDao studentDao;
+    private final CourseDao courseDao;
 
-    public StudentServiceImpl(StudentDao studentDao) {
+    public StudentServiceImpl(StudentDao studentDao, CourseDao courseDao) {
         this.studentDao = studentDao;
+        this.courseDao = courseDao;
     }
 
     @Override
@@ -46,12 +49,36 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void addStudentToCourse(int studentId, int courseId) {
         log.info("Adding student {} to course {}", studentId, courseId);
+        studentDao.findById(studentId)
+                .orElseThrow(() -> {
+                    log.warn("Cannot enroll: student {} does not exist", studentId);
+                    return new IllegalArgumentException("No student with id " + studentId);
+                });
+        courseDao.findById(courseId)
+                .orElseThrow(() -> {
+                    log.warn("Cannot enroll: course {} does not exist", courseId);
+                    return new IllegalArgumentException("No course with id " + courseId);
+                });
+        boolean alreadyEnrolled = courseDao.findByStudentId(studentId).stream()
+                .anyMatch(c -> c.getCourseId() == courseId);
+        if (alreadyEnrolled) {
+            log.warn("Student {} is already enrolled on course {}", studentId, courseId);
+            throw new IllegalArgumentException(
+                    "Student " + studentId + " is already enrolled on course " + courseId);
+        }
         studentDao.addToCourse(studentId, courseId);
     }
 
     @Override
     public void removeStudentFromCourse(int studentId, int courseId) {
         log.info("Removing student {} from course {}", studentId, courseId);
+        boolean enrolled = courseDao.findByStudentId(studentId).stream()
+                .anyMatch(c -> c.getCourseId() == courseId);
+        if (!enrolled) {
+            log.warn("Student {} is not enrolled on course {}", studentId, courseId);
+            throw new IllegalArgumentException(
+                    "Student " + studentId + " is not enrolled on course " + courseId);
+        }
         studentDao.removeFromCourse(studentId, courseId);
     }
 }

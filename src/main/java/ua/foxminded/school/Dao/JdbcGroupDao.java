@@ -46,7 +46,7 @@ public class JdbcGroupDao implements GroupDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID, groupRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
-            log.debug("No group found with id {}", id);
+            log.warn("No group found with id {}", id);
             return Optional.empty();
         }
     }

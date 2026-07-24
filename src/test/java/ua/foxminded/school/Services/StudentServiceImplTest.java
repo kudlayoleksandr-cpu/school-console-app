@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import ua.foxminded.school.Dao.CourseDao;
 import ua.foxminded.school.Dao.StudentDao;
+import ua.foxminded.school.model.Course;
 import ua.foxminded.school.model.Student;
 
 import java.util.List;
@@ -22,6 +24,9 @@ class StudentServiceImplTest {
 
     @MockBean
     StudentDao studentDao;
+
+    @MockBean
+    CourseDao courseDao;
 
     @Autowired
     StudentServiceImpl studentService;
@@ -66,15 +71,41 @@ class StudentServiceImplTest {
 
     @Test
     void shouldAddStudentToCourse() {
+        when(studentDao.findById(1)).thenReturn(Optional.of(new Student(1, 1, "Max", "Mux")));
+        when(courseDao.findById(2)).thenReturn(Optional.of(new Course(2, "Math", "Math course")));
+        when(courseDao.findByStudentId(1)).thenReturn(List.of());
+
         studentService.addStudentToCourse(1, 2);
 
         verify(studentDao).addToCourse(1, 2);
     }
 
     @Test
+    void shouldThrowWhenEnrollingOnAlreadyTakenCourse() {
+        when(studentDao.findById(1)).thenReturn(Optional.of(new Student(1, 1, "Max", "Mux")));
+        when(courseDao.findById(2)).thenReturn(Optional.of(new Course(2, "Math", "Math course")));
+        when(courseDao.findByStudentId(1)).thenReturn(List.of(new Course(2, "Math", "Math course")));
+
+        assertThrows(IllegalArgumentException.class, () -> studentService.addStudentToCourse(1, 2));
+
+        verify(studentDao, never()).addToCourse(anyInt(), anyInt());
+    }
+
+    @Test
     void shouldRemoveStudentFromCourse() {
+        when(courseDao.findByStudentId(1)).thenReturn(List.of(new Course(2, "Math", "Math course")));
+
         studentService.removeStudentFromCourse(1, 2);
 
         verify(studentDao).removeFromCourse(1, 2);
+    }
+
+    @Test
+    void shouldThrowWhenRemovingNotEnrolledCourse() {
+        when(courseDao.findByStudentId(1)).thenReturn(List.of());
+
+        assertThrows(IllegalArgumentException.class, () -> studentService.removeStudentFromCourse(1, 2));
+
+        verify(studentDao, never()).removeFromCourse(anyInt(), anyInt());
     }
 }
