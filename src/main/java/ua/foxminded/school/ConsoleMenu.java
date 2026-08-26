@@ -111,7 +111,7 @@ public class ConsoleMenu implements ApplicationRunner {
         String firstName = scanner.nextLine();
         System.out.print("Enter last name: ");
         String lastName = scanner.nextLine();
-        studentService.addStudent(new Student(0, null, firstName, lastName));
+        studentService.addStudent(new Student(null, firstName, lastName));
         System.out.println("Student added.");
     }
 

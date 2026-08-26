@@ -1,4 +1,11 @@
 spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
   datasource:
     url: jdbc:postgresql://localhost:5432/school_db
     username: school_user

@@ -3,6 +3,7 @@ package ua.foxminded.school.Services;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ua.foxminded.school.Dao.CourseDao;
 import ua.foxminded.school.Dao.GroupDao;
 import ua.foxminded.school.Dao.StudentDao;
@@ -54,6 +55,7 @@ public class DataGeneratorService implements CommandLineRunner {
     }
 
     @Override
+    @Transactional
     public void run(String... args) {
         if (!groupDao.findAll().isEmpty()) {
             return;
@@ -66,25 +68,25 @@ public class DataGeneratorService implements CommandLineRunner {
 
     private void generateGroups() {
         for (int i = 0; i < GROUPS_COUNT; i++) {
-            groupDao.save(new Group(0, randomGroupName()));
+            groupDao.save(new Group(randomGroupName()));
         }
     }
 
     private void generateCourses() {
         for (String name : COURSE_NAMES) {
-            courseDao.save(new Course(0, name, name + " course"));
+            courseDao.save(new Course(name, name + " course"));
         }
     }
 
     private void generateStudents() {
-        List<Integer> groupIds = groupDao.findAll().stream().map(Group::getGroupId).toList();
+        List<Group> groups = groupDao.findAll();
 
-        List<Integer> assignments = new ArrayList<>(Collections.nCopies(STUDENTS_COUNT, null));
+        List<Group> assignments = new ArrayList<>(Collections.nCopies(STUDENTS_COUNT, null));
         int index = 0;
-        for (Integer groupId : groupIds) {
+        for (Group group : groups) {
             int size = MIN_GROUP_SIZE + random.nextInt(MAX_GROUP_SIZE - MIN_GROUP_SIZE + 1);
             for (int i = 0; i < size && index < STUDENTS_COUNT; i++) {
-                assignments.set(index++, groupId);
+                assignments.set(index++, group);
             }
         }
         Collections.shuffle(assignments);
@@ -92,7 +94,7 @@ public class DataGeneratorService implements CommandLineRunner {
         for (int i = 0; i < STUDENTS_COUNT; i++) {
             String firstName = FIRST_NAMES[random.nextInt(FIRST_NAMES.length)];
             String lastName = LAST_NAMES[random.nextInt(LAST_NAMES.length)];
-            studentDao.save(new Student(0, assignments.get(i), firstName, lastName));
+            studentDao.save(new Student(assignments.get(i), firstName, lastName));
         }
     }
 
