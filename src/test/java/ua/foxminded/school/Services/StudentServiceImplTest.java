@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import ua.foxminded.school.Dao.CourseDao;
 import ua.foxminded.school.Dao.StudentDao;
 import ua.foxminded.school.model.Course;
+import ua.foxminded.school.model.Group;
 import ua.foxminded.school.model.Student;
 
 import java.util.List;
@@ -33,7 +34,7 @@ class StudentServiceImplTest {
 
     @Test
     void shouldFindStudentsByCourseName() {
-        List<Student> expected = List.of(new Student(1, 1, "John", "Doe"));
+        List<Student> expected = List.of(new Student(1, new Group(1, "AA-11"), "John", "Doe"));
         when(studentDao.findByCourseName("Math")).thenReturn(expected);
 
         List<Student> result = studentService.findStudentsByCourseName("Math");
@@ -53,7 +54,7 @@ class StudentServiceImplTest {
 
     @Test
     void shouldDeleteStudentWhenExists() {
-        when(studentDao.findById(5)).thenReturn(Optional.of(new Student(5, 1, "Max", "Mux")));
+        when(studentDao.findById(5)).thenReturn(Optional.of(new Student(5, new Group(1, "AA-11"), "Max", "Mux")));
 
         studentService.deleteStudent(5);
 
@@ -71,7 +72,7 @@ class StudentServiceImplTest {
 
     @Test
     void shouldAddStudentToCourse() {
-        when(studentDao.findById(1)).thenReturn(Optional.of(new Student(1, 1, "Max", "Mux")));
+        when(studentDao.findById(1)).thenReturn(Optional.of(new Student(1, new Group(1, "AA-11"), "Max", "Mux")));
         when(courseDao.findById(2)).thenReturn(Optional.of(new Course(2, "Math", "Math course")));
         when(courseDao.findByStudentId(1)).thenReturn(List.of());
 
@@ -82,7 +83,7 @@ class StudentServiceImplTest {
 
     @Test
     void shouldThrowWhenEnrollingOnAlreadyTakenCourse() {
-        when(studentDao.findById(1)).thenReturn(Optional.of(new Student(1, 1, "Max", "Mux")));
+        when(studentDao.findById(1)).thenReturn(Optional.of(new Student(1, new Group(1, "AA-11"), "Max", "Mux")));
         when(courseDao.findById(2)).thenReturn(Optional.of(new Course(2, "Math", "Math course")));
         when(courseDao.findByStudentId(1)).thenReturn(List.of(new Course(2, "Math", "Math course")));
 
