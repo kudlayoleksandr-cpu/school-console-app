@@ -1,32 +1,25 @@
-package ua.foxminded.school.Dao.jpa;
+package ua.foxminded.school.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.jdbc.Sql;
-import ua.foxminded.school.Dao.GroupDao;
 import ua.foxminded.school.model.Group;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-        JpaGroupDao.class
-}))
+@DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
         scripts = {"/sql/clear_tables.sql", "/sql/sample_data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
-class JpaGroupDaoTest {
+class GroupRepositoryTest {
 
     @Autowired
-    private GroupDao dao;
+    private GroupRepository dao;
 
     @Autowired
     private TestEntityManager em;
@@ -63,7 +56,7 @@ class JpaGroupDaoTest {
 
     @Test
     void updateShouldRenameGroup() {
-        dao.update(new Group(1, "ZZ-99"));
+        dao.save(new Group(1, "ZZ-99"));
         flushAndClear();
 
         assertThat(em.find(Group.class, 1).getGroupName()).isEqualTo("ZZ-99");

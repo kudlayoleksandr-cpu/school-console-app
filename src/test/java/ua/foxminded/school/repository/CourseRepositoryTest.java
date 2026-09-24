@@ -1,30 +1,25 @@
-package ua.foxminded.school.Dao.jpa;
+package ua.foxminded.school.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.jdbc.Sql;
-import ua.foxminded.school.Dao.CourseDao;
 import ua.foxminded.school.model.Course;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-        JpaCourseDao.class
-}))
+@DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
         scripts = {"/sql/clear_tables.sql", "/sql/sample_data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
-class JpaCourseDaoTest {
+class CourseRepositoryTest {
 
     @Autowired
-    private CourseDao dao;
+    private CourseRepository dao;
 
     @Autowired
     private TestEntityManager em;
@@ -43,14 +38,14 @@ class JpaCourseDaoTest {
 
     @Test
     void findByNameShouldReturnCourseWhenPresent() {
-        assertThat(dao.findByName("Biology")).get()
+        assertThat(dao.findByCourseName("Biology")).get()
                 .extracting(Course::getCourseId)
                 .isEqualTo(2);
     }
 
     @Test
     void findByNameShouldReturnEmptyWhenMissing() {
-        assertThat(dao.findByName("Astrology")).isEmpty();
+        assertThat(dao.findByCourseName("Astrology")).isEmpty();
     }
 
     @Test
@@ -85,7 +80,7 @@ class JpaCourseDaoTest {
 
     @Test
     void updateShouldChangeCourseFields() {
-        dao.update(new Course(1, "Advanced Math", "Harder numbers"));
+        dao.save(new Course(1, "Advanced Math", "Harder numbers"));
         flushAndClear();
 
         Course reloaded = em.find(Course.class, 1);

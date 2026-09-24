@@ -1,15 +1,11 @@
-package ua.foxminded.school.Dao.jpa;
+package ua.foxminded.school.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.jdbc.Sql;
-import ua.foxminded.school.Dao.StudentDao;
-import ua.foxminded.school.model.Course;
 import ua.foxminded.school.model.Group;
 import ua.foxminded.school.model.Student;
 
@@ -18,18 +14,16 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-        JpaStudentDao.class
-}))
+@DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
         scripts = {"/sql/clear_tables.sql", "/sql/sample_data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
-class JpaStudentDaoTest {
+class StudentRepositoryTest {
 
     @Autowired
-    private StudentDao dao;
+    private StudentRepository dao;
 
     @Autowired
     private TestEntityManager em;
@@ -77,7 +71,7 @@ class JpaStudentDaoTest {
     void updateShouldChangeStudentFields() {
         Student detached = new Student(1, em.find(Group.class, 2), "Johnny", "Dodo");
 
-        dao.update(detached);
+        dao.save(detached);
         flushAndClear();
 
         Student reloaded = em.find(Student.class, 1);
@@ -112,68 +106,10 @@ class JpaStudentDaoTest {
                 .extracting(Student::getStudentId)
                 .containsExactlyInAnyOrder(1, 2);
     }
-
     @Test
     void findByCourseNameShouldReturnEmptyListForUnknownCourse() {
         assertThat(dao.findByCourseName("Astrology")).isEmpty();
     }
-
-    @Test
-    void assignToGroupShouldSetGroupOfStudentWithoutOne() {
-        dao.assignToGroup(4, 3);
-        flushAndClear();
-
-        assertThat(em.find(Student.class, 4).getGroup().getGroupName()).isEqualTo("CC-33");
-    }
-
-    @Test
-    void assignToGroupShouldDoNothingWhenStudentMissing() {
-        dao.assignToGroup(999, 1);
-        flushAndClear();
-
-        assertThat(dao.findById(999)).isEmpty();
-    }
-
-    @Test
-    void addToCourseShouldCreateEnrollment() {
-        dao.addToCourse(4, 1);
-        flushAndClear();
-
-        assertThat(em.find(Student.class, 4).getCourses())
-                .extracting(Course::getCourseName)
-                .containsExactly("Math");
-    }
-
-    @Test
-    void addToCourseShouldDoNothingWhenCourseMissing() {
-        dao.addToCourse(4, 999);
-        flushAndClear();
-
-        assertThat(countEnrollmentsOf(4)).isZero();
-    }
-
-    @Test
-    void removeFromCourseShouldDropOnlyThatEnrollment() {
-        dao.removeFromCourse(1, 1);
-        flushAndClear();
-
-        assertThat(em.find(Student.class, 1).getCourses())
-                .extracting(Course::getCourseName)
-                .containsExactly("Biology");
-    }
-
-    @Test
-    void removeFromCourseShouldDoNothingWhenStudentMissing() {
-        dao.removeFromCourse(999, 1);
-        flushAndClear();
-
-        assertThat(dao.findByCourseName("Math")).hasSize(2);
-    }
-
-    /**
-     * The DAO shares the test's transaction and persistence context, so pending changes have to be
-     * pushed to the database and the context emptied before assertions really re-read the rows.
-     */
     private void flushAndClear() {
         em.flush();
         em.clear();

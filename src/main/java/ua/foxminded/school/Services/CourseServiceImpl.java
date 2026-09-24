@@ -3,8 +3,9 @@ package ua.foxminded.school.Services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ua.foxminded.school.repository.CourseRepository;
 import ua.foxminded.school.model.Course;
+import ua.foxminded.school.repository.CourseRepository;
+
 
 import java.util.List;
 
