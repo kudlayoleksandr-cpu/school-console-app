@@ -10,6 +10,9 @@ import ua.foxminded.school.Dao.StudentDao;
 import ua.foxminded.school.model.Course;
 import ua.foxminded.school.model.Group;
 import ua.foxminded.school.model.Student;
+import ua.foxminded.school.repository.CourseRepository;
+import ua.foxminded.school.repository.GroupRepository;
+import ua.foxminded.school.repository.StudentRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,12 +46,12 @@ public class DataGeneratorService implements CommandLineRunner {
     private static final int MAX_GROUP_SIZE = 30;
     private static final char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 
-    private final GroupDao groupDao;
-    private final CourseDao courseDao;
-    private final StudentDao studentDao;
+    private final GroupRepository groupDao;
+    private final CourseRepository courseDao;
+    private final StudentRepository studentDao;
     private final Random random = new Random();
 
-    public DataGeneratorService(GroupDao groupDao, CourseDao courseDao, StudentDao studentDao) {
+    public DataGeneratorService(GroupRepository groupDao, CourseRepository courseDao, StudentRepository studentDao) {
         this.groupDao = groupDao;
         this.courseDao = courseDao;
         this.studentDao = studentDao;
@@ -99,16 +102,16 @@ public class DataGeneratorService implements CommandLineRunner {
     }
 
     private void assignCoursesToStudents() {
-        List<Integer> courseIds = new ArrayList<>(
-                courseDao.findAll().stream().map(Course::getCourseId).toList());
+        List<Course> courses = new ArrayList<>(courseDao.findAll());
         for (Student student : studentDao.findAll()) {
-            Collections.shuffle(courseIds);
+            Collections.shuffle(courses);
             int count = 1 + random.nextInt(3);
             for (int i = 0; i < count; i++) {
-                studentDao.addToCourse(student.getStudentId(), courseIds.get(i));
+                student.enroll(courses.get(i));
             }
         }
     }
+
 
     private String randomGroupName() {
         char c1 = ALPHABET[random.nextInt(ALPHABET.length)];

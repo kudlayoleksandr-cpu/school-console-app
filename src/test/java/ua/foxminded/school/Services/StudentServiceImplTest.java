@@ -1,11 +1,11 @@
 package ua.foxminded.school.Services;
 
+import ua.foxminded.school.repository.StudentRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import ua.foxminded.school.Dao.CourseDao;
-import ua.foxminded.school.Dao.StudentDao;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import ua.foxminded.school.repository.CourseRepository;
 import ua.foxminded.school.model.Course;
 import ua.foxminded.school.model.Group;
 import ua.foxminded.school.model.Student;
@@ -13,8 +13,7 @@ import ua.foxminded.school.model.Student;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -23,11 +22,11 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {StudentServiceImpl.class})
 class StudentServiceImplTest {
 
-    @MockBean
-    StudentDao studentDao;
+    @MockitoBean
+    StudentRepository studentDao;
 
-    @MockBean
-    CourseDao courseDao;
+    @MockitoBean
+    CourseRepository courseDao;
 
     @Autowired
     StudentServiceImpl studentService;
@@ -72,14 +71,16 @@ class StudentServiceImplTest {
 
     @Test
     void shouldAddStudentToCourse() {
-        when(studentDao.findById(1)).thenReturn(Optional.of(new Student(1, new Group(1, "AA-11"), "Max", "Mux")));
-        when(courseDao.findById(2)).thenReturn(Optional.of(new Course(2, "Math", "Math course")));
+        Student student = new Student(1, new Group(1, "AA-11"), "Max", "Mux");
+        Course course = new Course(2, "Math", "Math course");
+        when(studentDao.findById(1)).thenReturn(Optional.of(student));
+        when(courseDao.findById(2)).thenReturn(Optional.of(course));
         when(courseDao.findByStudentId(1)).thenReturn(List.of());
-
         studentService.addStudentToCourse(1, 2);
-
-        verify(studentDao).addToCourse(1, 2);
+        assertTrue(student.getCourses().contains(course));
     }
+
+
 
     @Test
     void shouldThrowWhenEnrollingOnAlreadyTakenCourse() {

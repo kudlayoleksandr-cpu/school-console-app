@@ -3,7 +3,7 @@ package ua.foxminded.school.Services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ua.foxminded.school.Dao.CourseDao;
+import ua.foxminded.school.repository.CourseRepository;
 import ua.foxminded.school.model.Course;
 
 import java.util.List;
@@ -13,9 +13,9 @@ public class CourseServiceImpl implements CourseService {
 
     private static final Logger log = LoggerFactory.getLogger(CourseServiceImpl.class);
 
-    private final CourseDao courseDao;
+    private final CourseRepository courseDao;
 
-    public CourseServiceImpl(CourseDao courseDao) {
+    public CourseServiceImpl(CourseRepository courseDao) {
         this.courseDao = courseDao;
     }
 
