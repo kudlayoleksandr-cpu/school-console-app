@@ -1,5 +1,5 @@
 # task2.1 
-
+School Console App is a Java 17 console application for managing school data stored in a PostgreSQL database. It’s built on Spring Boot 3.4, which handles configuration and wires the application’s components together. Data access uses Spring JDBC and Spring Data JPA, so the app can work with the database through both SQL queries and entity mappings. The database schema is created and versioned automatically with Flyway migrations, so a fresh database is set up correctly on startup. The code is tested with Spring Boot Test and Testcontainers, which run the tests against a real PostgreSQL instance in Docker instead of a mock. The project is built with Maven.
 
 
 ## Getting started
